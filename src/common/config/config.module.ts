@@ -9,6 +9,10 @@ const schema = Joi.object({
     .default('development'),
   PORT: Joi.number().default(3000),
   DB_HOST: Joi.string().ip(),
+  CORS: Joi.boolean().default(false),
+  PREFIX: Joi.string().default('api'),
+  VERSION: Joi.string().optional(),
+  ERROR_FILTER: Joi.boolean().default(true),
 });
 @Module({
   imports: [
