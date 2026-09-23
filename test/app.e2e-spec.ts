@@ -16,14 +16,15 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
+  it('/ (GET) stores and returns the cached token', async () => {
+    await request(app.getHttpServer()).get('/?token=next').expect(200).expect({});
+    await request(app.getHttpServer())
       .get('/')
       .expect(200)
-      .expect('Hello World!');
+      .expect({ token: 'next' });
   });
 
   afterEach(async () => {
-    await app.close();
+    if (app) await app.close();
   });
 });

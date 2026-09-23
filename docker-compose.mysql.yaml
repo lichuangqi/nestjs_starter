@@ -1,0 +1,17 @@
+services:
+  mysql:
+    extends:
+      file: compose.yaml
+      service: mysql
+  mysql-secondary:
+    extends:
+      file: compose.yaml
+      service: mysql-secondary
+  adminer:
+    image: adminer:latest
+    ports:
+      - "127.0.0.1:8080:8080"
+
+volumes:
+  mysql_data:
+  mysql_secondary_data:

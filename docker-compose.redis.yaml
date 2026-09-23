@@ -1,0 +1,13 @@
+services:
+  redis:
+    extends:
+      file: compose.yaml
+      service: redis
+  redis-insight:
+    extends:
+      file: compose.yaml
+      service: redis-insight
+
+volumes:
+  redis_data:
+  redis_insight_data:

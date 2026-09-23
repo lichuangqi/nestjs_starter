@@ -1,14 +1,19 @@
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { format } from 'winston';
 import { Console } from 'winston/lib/winston/transports';
-import { utilities } from 'nest-winston';
 
 export const consoleTransports = new Console({
   level: 'info',
   format: format.combine(
     format.timestamp(),
     format.ms(),
-    utilities.format.nestLike('Winston'),
+    format.colorize(),
+    format.printf(({ level, message, context, timestamp, ms }) => {
+      const scope = context ? ` [${String(context)}]` : '';
+      const content =
+        typeof message === 'string' ? message : JSON.stringify(message);
+      return `${String(timestamp)} ${level}${scope} ${content} ${String(ms)}`;
+    }),
   ),
 });
 

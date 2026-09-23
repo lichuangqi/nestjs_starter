@@ -1,0 +1,12 @@
+services:
+  postgres:
+    extends:
+      file: compose.yaml
+      service: postgres
+  adminer:
+    image: adminer:latest
+    ports:
+      - "127.0.0.1:8080:8080"
+
+volumes:
+  postgres_data:

@@ -1,0 +1,13 @@
+services:
+  mongo:
+    extends:
+      file: compose.yaml
+      service: mongo
+  mongo-secondary:
+    extends:
+      file: compose.yaml
+      service: mongo-secondary
+
+volumes:
+  mongo_data:
+  mongo_secondary_data:

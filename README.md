@@ -1,114 +1,64 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NestJS Starter
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A NestJS 12 starter for modular backend services, with centralized configuration, structured logging, standardized error responses, API versioning, request validation, multi-database access, caching, and email infrastructure.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Technology Stack
 
-## Description
+- NestJS 12, TypeScript 6, and SWC
+- Prisma 7, TypeORM, and Mongoose
+- PostgreSQL 17, MySQL 8.4, and MongoDB 7.0
+- Cache Manager with in-memory and Redis-backed storage
+- Winston logging and a global exception filter
+- Nodemailer with a safe JSON transport by default
+- Jest and Supertest
+- Docker Compose services for PostgreSQL, two MySQL instances, two MongoDB instances, Redis, Redis Insight, and Adminer
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+## Local Development
 
 ```bash
-$ pnpm install
+pnpm install
+cp .env.example .env.development
+pnpm docker:up
+pnpm db:migrate
+pnpm start:dev
 ```
 
-## Compile and run the project
+The default API URL is `http://localhost:3000/api/v1`. If `PORT` is overridden in `.env.development`, use the configured port instead.
+
+PostgreSQL is available on `localhost:5432`. The two MySQL instances use ports `3306` and `3307`, the two MongoDB instances use ports `27017` and `27018`, and Redis uses port `6379`. Redis Insight is available at `http://localhost:5540`, and Adminer is available at `http://localhost:8080`.
+
+With `TENANT_MODE=false`, the application uses Prisma with PostgreSQL. When `TENANT_MODE=true`, the `x-tenant-id` request header selects an implementation through the repository abstraction:
+
+- `default`, `prisma2`: Prisma with PostgreSQL
+- `prisma1`: Prisma with MySQL on port `3307`
+- `typeorm1`: TypeORM with MySQL on port `3306`
+- `typeorm2`: TypeORM with MySQL on port `3307`
+- `typeorm3`: TypeORM with PostgreSQL
+- `mongo`, `mongo1`: Mongoose with the two MongoDB instances
+
+## Common Commands
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm run build
+pnpm test
+pnpm test:e2e
+pnpm db:generate
+pnpm db:migrate
+pnpm db:push:mysql
+pnpm db:studio
+pnpm docker:down
 ```
 
-## Run tests
+## Environment Configuration
 
-```bash
-# unit tests
-$ pnpm run test
+The application loads `.env.<NODE_ENV>` before `.env`. The Prisma CLI follows the same precedence so migrations and the Nest application resolve the same database connection.
 
-# e2e tests
-$ pnpm run test:e2e
+- `DATABASE_URL`: PostgreSQL connection string
+- `MYSQL_DATABASE_URL`: Prisma MySQL connection string
+- `TENANT_MODE`: Enables repository selection based on `x-tenant-id`
+- `REDIS_ON`: Uses Redis for Cache Manager when enabled; otherwise uses in-memory caching
+- `MAIL_ON`: Connects to SMTP when enabled; otherwise generates JSON email output
+- `PREFIX`, `VERSION`: API prefix and URI versions
+- `ERROR_FILTER`, `LOG_ON`: Global exception filtering and file logging switches
 
-# test coverage
-$ pnpm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Observability
-
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
-
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
-
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observer](https://observer.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+Do not commit real `.env` files. The repository only tracks `.env.example`.

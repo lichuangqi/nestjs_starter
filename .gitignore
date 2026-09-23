@@ -41,6 +41,10 @@ lerna-debug.log*
 .env.*
 !.env.example
 
+# Prisma generated client
+/src/generated/prisma-postgresql
+/src/generated/prisma-mysql
+
 # temp directory
 .temp
 .tmp

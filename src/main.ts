@@ -1,9 +1,13 @@
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AllExceptionFilter } from './common/filters/all-exception.filter';
-import { VERSION_NEUTRAL, VersioningType } from '@nestjs/common';
+import { AppLogger } from './common/logger/app-logger.service';
+import {
+  VERSION_NEUTRAL,
+  ValidationPipe,
+  VersioningType,
+} from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -18,7 +22,10 @@ async function bootstrap() {
     .filter(Boolean);
   const errorFilterEnabled = configService.get<boolean>('ERROR_FILTER', true);
 
-  app.useLogger(app.get(WINSTON_MODULE_NEST_PROVIDER));
+  app.useLogger(app.get(AppLogger));
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, transform: true }),
+  );
   app.setGlobalPrefix(prefix);
   app.enableVersioning({
     type: VersioningType.URI,
